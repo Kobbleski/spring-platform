@@ -1,8 +1,19 @@
 export interface CompressionSpringInput {
+
     wire_diameter: number
+
     coil_diameter: number
+
     active_coils: number
+
     shear_modulus: number
+
+    force: number
+}
+
+export interface GraphPoint {
+    deflection: number
+    force: number
 }
 
 export interface CompressionSpringResult {
@@ -17,6 +28,8 @@ export interface CompressionSpringResult {
     solid_height: number
 
     stress: number
+
+    graph_data: GraphPoint[]
 }
 
 export async function calculateCompressionSpring(

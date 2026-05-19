@@ -2,9 +2,13 @@ interface SpringInputFormProps {
 
     wireDiameter: string
     coilDiameter: string
+    activeCoils: string
+    force: string
 
     setWireDiameter: (value: string) => void
     setCoilDiameter: (value: string) => void
+    setActiveCoils: (value: string) => void
+    setForce: (value: string) => void
 
     onCalculate: () => void
 }
@@ -14,6 +18,10 @@ function SpringInputForm({
     coilDiameter,
     setWireDiameter,
     setCoilDiameter,
+    activeCoils,
+    force,
+    setActiveCoils,
+    setForce,
     onCalculate
 }: SpringInputFormProps) {
 
@@ -21,25 +29,49 @@ function SpringInputForm({
 
         <div>
 
-            <div>
+            <div className="mb-4">
                 <p>Wire Diameter</p>
 
                 <input
+                    className="border rounded p-2 w-full"
                     value={wireDiameter}
                     onChange={(e) => setWireDiameter(e.target.value)}
                 />
             </div>
 
-            <div>
+            <div className="mb-4">
                 <p>Coil Diameter</p>
 
                 <input
+                    className="border rounded p-2 w-full"
                     value={coilDiameter}
                     onChange={(e) => setCoilDiameter(e.target.value)}
                 />
             </div>
 
-            <button onClick={onCalculate}>
+            <div className="mb-4">
+                <p>Active Coils</p>
+
+                <input
+                    className="border rounded p-2 w-full"
+                    value={activeCoils}
+                    onChange={(e) => setActiveCoils(e.target.value)}
+                />
+            </div>
+
+            <div className="mb-4">
+                <p>Force</p>
+
+                <input
+                    className="border rounded p-2 w-full"
+                    value={force}
+                    onChange={(e) => setForce(e.target.value)}
+                />
+            </div>
+
+            <button
+                className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+                onClick={onCalculate}>
                 Calculate
             </button>
 

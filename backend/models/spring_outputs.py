@@ -1,5 +1,9 @@
 from pydantic import BaseModel
 
+class GraphPoint(BaseModel):
+
+    deflection: float
+    force: float
 
 class CompressionSpringOutput(BaseModel):
 
@@ -13,3 +17,5 @@ class CompressionSpringOutput(BaseModel):
     solid_height: float
 
     stress: float
+
+    graph_data: list[GraphPoint]

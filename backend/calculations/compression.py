@@ -22,7 +22,7 @@ def calculate_compression_spring(inputs):
     solid_height = n * d
 
     # Example force
-    force = 10
+    force = inputs.force
 
     # Wahl correction factor
     wahl_factor = ((4 * spring_index - 1) / (4 * spring_index - 4)) + (0.615 / spring_index)
@@ -33,11 +33,22 @@ def calculate_compression_spring(inputs):
         (math.pi * d**3)
     ) * wahl_factor
 
+    graph_data = []
+
+    for deflection in range(0, 11):
+        graph_force = spring_rate * deflection
+
+        graph_data.append({
+            "deflection": deflection,
+            "force": graph_force
+        })
+
     return {
         "spring_rate": spring_rate,
         "outside_diameter": outside_diameter,
         "inside_diameter": inside_diameter,
         "spring_index": spring_index,
         "solid_height": solid_height,
-        "stress": stress
+        "stress": stress,
+        "graph_data": graph_data
     }

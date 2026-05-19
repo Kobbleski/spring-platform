@@ -1,3 +1,5 @@
+import SpringGraph from './SpringGraph'
+
 function ResultsPanel({ results }: any) {
 
     if (!results) {
@@ -21,6 +23,8 @@ function ResultsPanel({ results }: any) {
             <p>Solid Height: {results.solid_height}</p>
 
             <p>Stress: {results.stress}</p>
+
+            <SpringGraph graphData={results.graph_data} />
 
         </div>
     )
