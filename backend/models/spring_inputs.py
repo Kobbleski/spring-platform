@@ -12,3 +12,5 @@ class CompressionSpringInput(BaseModel):
     shear_modulus: float
 
     force: float
+
+    material: str

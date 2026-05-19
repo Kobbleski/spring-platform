@@ -9,6 +9,8 @@ export interface CompressionSpringInput {
     shear_modulus: number
 
     force: number
+
+    material: string
 }
 
 export interface GraphPoint {

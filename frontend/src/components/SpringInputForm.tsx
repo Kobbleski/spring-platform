@@ -4,11 +4,13 @@ interface SpringInputFormProps {
     coilDiameter: string
     activeCoils: string
     force: string
+    material: string
 
     setWireDiameter: (value: string) => void
     setCoilDiameter: (value: string) => void
     setActiveCoils: (value: string) => void
     setForce: (value: string) => void
+    setMaterial: (value: string) => void
 
     onCalculate: () => void
 }
@@ -22,6 +24,8 @@ function SpringInputForm({
     force,
     setActiveCoils,
     setForce,
+    material,
+    setMaterial,
     onCalculate
 }: SpringInputFormProps) {
 
@@ -68,6 +72,26 @@ function SpringInputForm({
                     onChange={(e) => setForce(e.target.value)}
                 />
             </div>
+
+            <div className="mb-4">
+
+            <p>Material</p>
+
+            <select
+                className="border rounded p-2 w-full"
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
+            >
+
+                <option>Music Wire</option>
+
+                <option>Stainless Steel</option>
+
+                <option>Phosphor Bronze</option>
+
+            </select>
+
+        </div>
 
             <button
                 className="bg-blue-600 text-white px-4 py-2 rounded mt-4"

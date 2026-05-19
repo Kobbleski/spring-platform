@@ -13,6 +13,7 @@ function App() {
   const [coilDiameter, setCoilDiameter] = useState("")
   const [activeCoils, setActiveCoils] = useState("")
   const [force, setForce] = useState("")
+  const [material, setMaterial] = useState("Music Wire")
   const [results, setResults] = useState<any>(null)
 
   async function handleCalculate() {
@@ -40,7 +41,8 @@ function App() {
         coil_diameter: Number(coilDiameter),
         active_coils: Number(activeCoils),
         shear_modulus: 79000,
-        force: Number(force)
+        force: Number(force),
+        material: material,
       })
 
       setResults(result)
@@ -77,6 +79,9 @@ function App() {
             setCoilDiameter={setCoilDiameter}
             setActiveCoils={setActiveCoils}
             setForce={setForce}
+
+            material={material}
+            setMaterial={setMaterial}
 
             onCalculate={handleCalculate}
           />

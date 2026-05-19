@@ -1,4 +1,5 @@
 import math
+from data.materials import SPRING_MATERIALS
 
 
 def calculate_compression_spring(inputs):
@@ -6,7 +7,9 @@ def calculate_compression_spring(inputs):
     d = inputs.wire_diameter
     D = inputs.coil_diameter
     n = inputs.active_coils
-    G = inputs.shear_modulus
+
+    material_data = SPRING_MATERIALS[inputs.material]
+    G = material_data["shear_modulus"]
 
     # Spring rate
     spring_rate = (G * d**4) / (8 * D**3 * n)
