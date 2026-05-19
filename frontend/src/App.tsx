@@ -15,6 +15,7 @@ function App() {
   const [force, setForce] = useState("")
   const [material, setMaterial] = useState("Music Wire")
   const [results, setResults] = useState<any>(null)
+  const [unitSystem, setUnitSystem] = useState("Metric")
 
   async function handleCalculate() {
 
@@ -82,6 +83,9 @@ function App() {
 
             material={material}
             setMaterial={setMaterial}
+
+            unitSystem={unitSystem}
+            setUnitSystem={setUnitSystem}
 
             onCalculate={handleCalculate}
           />

@@ -5,12 +5,14 @@ interface SpringInputFormProps {
     activeCoils: string
     force: string
     material: string
+    unitSystem: string
 
     setWireDiameter: (value: string) => void
     setCoilDiameter: (value: string) => void
     setActiveCoils: (value: string) => void
     setForce: (value: string) => void
     setMaterial: (value: string) => void
+    setUnitSystem: (value: string) => void
 
     onCalculate: () => void
 }
@@ -26,15 +28,23 @@ function SpringInputForm({
     setForce,
     material,
     setMaterial,
+    unitSystem,
+    setUnitSystem,
     onCalculate
 }: SpringInputFormProps) {
+
+    const lengthUnit =
+        unitSystem === "Metric" ? "mm" : "in"
+
+    const forceUnit =
+        unitSystem === "Metric" ? "N" : "lbf"
 
     return (
 
         <div>
 
             <div className="mb-4">
-                <p>Wire Diameter</p>
+                <p>Wire Diameter ({lengthUnit})</p>
 
                 <input
                     className="border rounded p-2 w-full"
@@ -44,7 +54,7 @@ function SpringInputForm({
             </div>
 
             <div className="mb-4">
-                <p>Coil Diameter</p>
+                <p>Coil Diameter ({lengthUnit})</p>
 
                 <input
                     className="border rounded p-2 w-full"
@@ -64,7 +74,7 @@ function SpringInputForm({
             </div>
 
             <div className="mb-4">
-                <p>Force</p>
+                <p>Force ({forceUnit})</p>
 
                 <input
                     className="border rounded p-2 w-full"
@@ -75,23 +85,41 @@ function SpringInputForm({
 
             <div className="mb-4">
 
-            <p>Material</p>
+                <p>Unit System</p>
 
-            <select
-                className="border rounded p-2 w-full"
-                value={material}
-                onChange={(e) => setMaterial(e.target.value)}
-            >
+                <select
+                    className="border rounded p-2 w-full"
+                    value={unitSystem}
+                    onChange={(e) => setUnitSystem(e.target.value)}
+                >
 
-                <option>Music Wire</option>
+                    <option>Metric</option>
 
-                <option>Stainless Steel</option>
+                    <option>Imperial</option>
 
-                <option>Phosphor Bronze</option>
+                </select>
 
-            </select>
+            </div>
 
-        </div>
+            <div className="mb-4">
+
+                <p>Material</p>
+
+                <select
+                    className="border rounded p-2 w-full"
+                    value={material}
+                    onChange={(e) => setMaterial(e.target.value)}
+                >
+
+                    <option>Music Wire</option>
+
+                    <option>Stainless Steel</option>
+
+                    <option>Phosphor Bronze</option>
+
+                </select>
+
+            </div>
 
             <button
                 className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
