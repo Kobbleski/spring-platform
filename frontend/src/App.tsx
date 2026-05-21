@@ -7,6 +7,13 @@ import {
   calculateCompressionSpring
 } from './api/springApi'
 
+import {
+    inchesToMm,
+    lbfToN,
+    mmToInches,
+    nToLbf
+} from './utils/unitConversions'
+
 function App() {
 
   const [wireDiameter, setWireDiameter] = useState("")
@@ -16,6 +23,24 @@ function App() {
   const [material, setMaterial] = useState("Music Wire")
   const [results, setResults] = useState<any>(null)
   const [unitSystem, setUnitSystem] = useState("Metric")
+
+  let convertedWireDiameter = Number(wireDiameter)
+
+  let convertedCoilDiameter = Number(coilDiameter)
+
+  let convertedForce = Number(force)
+
+  if (unitSystem === "Imperial") {
+
+    convertedWireDiameter =
+        inchesToMm(convertedWireDiameter)
+
+    convertedCoilDiameter =
+        inchesToMm(convertedCoilDiameter)
+
+    convertedForce =
+        lbfToN(convertedForce)
+  }
 
   async function handleCalculate() {
 
@@ -36,13 +61,31 @@ function App() {
 
     try {
 
+      let convertedWireDiameter = Number(wireDiameter)
+
+      let convertedCoilDiameter = Number(coilDiameter)
+
+      let convertedForce = Number(force)
+
+      if (unitSystem === "Imperial") {
+
+        convertedWireDiameter =
+            inchesToMm(convertedWireDiameter)
+
+        convertedCoilDiameter =
+            inchesToMm(convertedCoilDiameter)
+
+        convertedForce =
+            lbfToN(convertedForce)
+      }
+
       const result = await calculateCompressionSpring({
 
-        wire_diameter: Number(wireDiameter),
-        coil_diameter: Number(coilDiameter),
+        wire_diameter: convertedWireDiameter,
+        coil_diameter: convertedCoilDiameter,
         active_coils: Number(activeCoils),
         shear_modulus: 79000,
-        force: Number(force),
+        force: convertedForce,
         material: material,
       })
 
@@ -94,7 +137,10 @@ function App() {
 
         <div className="bg-white rounded-xl shadow p-6">
 
-          <ResultsPanel results={results} />
+          <ResultsPanel
+            results={results}
+            unitSystem={unitSystem}
+          />
 
         </div>
 
