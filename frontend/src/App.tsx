@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import SpringInputForm from './components/SpringInputForm'
 import ResultsPanel from './components/ResultsPanel'
+import SpringModelViewer from './components/SpringModelViewer'
 
 import {
   calculateCompressionSpring,
@@ -16,6 +17,9 @@ import {
     inchesToMm,
     lbfToN
 } from './utils/unitConversions'
+import type {
+    SpringModelSpec,
+} from './utils/springModel'
 
 function App() {
 
@@ -28,6 +32,7 @@ function App() {
   const [angleDegrees, setAngleDegrees] = useState("")
   const [material, setMaterial] = useState("Music Wire")
   const [results, setResults] = useState<SpringResult | null>(null)
+  const [modelSpec, setModelSpec] = useState<SpringModelSpec | null>(null)
   const [unitSystem, setUnitSystem] = useState("Metric")
 
   async function handleCalculate() {
@@ -115,6 +120,12 @@ function App() {
         active_coils: parsedActiveCoils,
         material: material,
       }
+      const nextModelSpec = {
+        springType,
+        wireDiameter: convertedWireDiameter,
+        coilDiameter: convertedCoilDiameter,
+        activeCoils: parsedActiveCoils,
+      }
 
       if (springType === "compression") {
         const result = await calculateCompressionSpring({
@@ -123,6 +134,7 @@ function App() {
         })
 
         setResults(result)
+        setModelSpec(nextModelSpec)
         return
       }
 
@@ -134,6 +146,7 @@ function App() {
         })
 
         setResults(result)
+        setModelSpec(nextModelSpec)
         return
       }
 
@@ -144,6 +157,7 @@ function App() {
         })
 
         setResults(result)
+        setModelSpec(nextModelSpec)
         return
       }
 
@@ -153,6 +167,7 @@ function App() {
       })
 
       setResults(result)
+      setModelSpec(nextModelSpec)
 
     } catch (error) {
 
@@ -214,6 +229,10 @@ function App() {
         </div>
 
       </div>
+
+      <SpringModelViewer
+        modelSpec={modelSpec}
+      />
 
     </div>
 
