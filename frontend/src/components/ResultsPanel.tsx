@@ -5,12 +5,29 @@ import {
     nToLbf,
 } from '../utils/unitConversions'
 
+import type {
+    CompressionSpringResult,
+    GraphPoint,
+} from '../api/SpringApi'
+
 
 interface ResultsPanelProps {
 
-    results: any
+    results: CompressionSpringResult | null
 
     unitSystem: string
+}
+
+
+function nPerMmToLbfPerIn(value: number): number {
+
+    return nToLbf(value) * 25.4
+}
+
+
+function mpaToKsi(value: number): number {
+
+    return value * 0.145038
 }
 
 
@@ -29,6 +46,12 @@ function ResultsPanel({
     const forceUnit =
         unitSystem === "Metric" ? "N" : "lbf"
 
+    const springRateUnit =
+        unitSystem === "Metric" ? "N/mm" : "lbf/in"
+
+    const stressUnit =
+        unitSystem === "Metric" ? "MPa" : "ksi"
+
     const outsideDiameter =
         unitSystem === "Metric"
             ? results.outside_diameter
@@ -44,6 +67,24 @@ function ResultsPanel({
             ? results.solid_height
             : mmToInches(results.solid_height)
 
+    const springRate =
+        unitSystem === "Metric"
+            ? results.spring_rate
+            : nPerMmToLbfPerIn(results.spring_rate)
+
+    const stress =
+        unitSystem === "Metric"
+            ? results.stress
+            : mpaToKsi(results.stress)
+
+    const graphData: GraphPoint[] =
+        unitSystem === "Metric"
+            ? results.graph_data
+            : results.graph_data.map((point) => ({
+                deflection: mmToInches(point.deflection),
+                force: nToLbf(point.force),
+            }))
+
     return (
 
         <div>
@@ -57,7 +98,9 @@ function ResultsPanel({
                 <p>
                     Spring Rate:
                     {" "}
-                    {results.spring_rate.toFixed(2)}
+                    {springRate.toFixed(2)}
+                    {" "}
+                    {springRateUnit}
                 </p>
 
                 <p>
@@ -93,7 +136,9 @@ function ResultsPanel({
                 <p>
                     Stress:
                     {" "}
-                    {results.stress.toFixed(2)}
+                    {stress.toFixed(2)}
+                    {" "}
+                    {stressUnit}
                 </p>
 
             </div>
@@ -101,7 +146,9 @@ function ResultsPanel({
             <div className="mt-6">
 
                 <SpringGraph
-                    graphData={results.graph_data}
+                    graphData={graphData}
+                    xUnit={lengthUnit}
+                    yUnit={forceUnit}
                 />
 
             </div>

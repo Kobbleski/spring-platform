@@ -8,8 +8,23 @@ import {
     ResponsiveContainer
 } from 'recharts'
 
+import type {
+    GraphPoint,
+} from '../api/SpringApi'
 
-function SpringGraph({ graphData }: any) {
+
+interface SpringGraphProps {
+    graphData: GraphPoint[]
+    xUnit: string
+    yUnit: string
+}
+
+
+function SpringGraph({
+    graphData,
+    xUnit,
+    yUnit,
+}: SpringGraphProps) {
 
     return (
 
@@ -21,9 +36,22 @@ function SpringGraph({ graphData }: any) {
 
                     <CartesianGrid strokeDasharray="3 3" />
 
-                    <XAxis dataKey="deflection" />
+                    <XAxis
+                        dataKey="deflection"
+                        label={{
+                            value: `Deflection (${xUnit})`,
+                            position: "insideBottom",
+                            offset: -5,
+                        }}
+                    />
 
-                    <YAxis />
+                    <YAxis
+                        label={{
+                            value: `Force (${yUnit})`,
+                            angle: -90,
+                            position: "insideLeft",
+                        }}
+                    />
 
                     <Tooltip />
 

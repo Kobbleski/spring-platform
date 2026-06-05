@@ -1,15 +1,8 @@
 export interface CompressionSpringInput {
-
     wire_diameter: number
-
     coil_diameter: number
-
     active_coils: number
-
-    shear_modulus: number
-
     force: number
-
     material: string
 }
 
@@ -19,27 +12,23 @@ export interface GraphPoint {
 }
 
 export interface CompressionSpringResult {
-
     spring_rate: number
-
     outside_diameter: number
     inside_diameter: number
-
     spring_index: number
-
     solid_height: number
-
     stress: number
-
     graph_data: GraphPoint[]
 }
+
+const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000"
 
 export async function calculateCompressionSpring(
     inputs: CompressionSpringInput
 ): Promise<CompressionSpringResult> {
-
     const response = await fetch(
-        "http://127.0.0.1:8000/compression/calculate",
+        `${API_BASE_URL}/compression/calculate`,
         {
             method: "POST",
             headers: {

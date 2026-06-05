@@ -4,14 +4,13 @@ import SpringInputForm from './components/SpringInputForm'
 import ResultsPanel from './components/ResultsPanel'
 
 import {
-  calculateCompressionSpring
-} from './api/springApi'
+  calculateCompressionSpring,
+  type CompressionSpringResult
+} from './api/SpringApi'
 
 import {
     inchesToMm,
-    lbfToN,
-    mmToInches,
-    nToLbf
+    lbfToN
 } from './utils/unitConversions'
 
 function App() {
@@ -21,26 +20,8 @@ function App() {
   const [activeCoils, setActiveCoils] = useState("")
   const [force, setForce] = useState("")
   const [material, setMaterial] = useState("Music Wire")
-  const [results, setResults] = useState<any>(null)
+  const [results, setResults] = useState<CompressionSpringResult | null>(null)
   const [unitSystem, setUnitSystem] = useState("Metric")
-
-  let convertedWireDiameter = Number(wireDiameter)
-
-  let convertedCoilDiameter = Number(coilDiameter)
-
-  let convertedForce = Number(force)
-
-  if (unitSystem === "Imperial") {
-
-    convertedWireDiameter =
-        inchesToMm(convertedWireDiameter)
-
-    convertedCoilDiameter =
-        inchesToMm(convertedCoilDiameter)
-
-    convertedForce =
-        lbfToN(convertedForce)
-  }
 
   async function handleCalculate() {
 
@@ -54,18 +35,43 @@ function App() {
         return
     }
 
-    if (Number(coilDiameter) <= Number(wireDiameter)) {
+    const parsedWireDiameter = Number(wireDiameter)
+    const parsedCoilDiameter = Number(coilDiameter)
+    const parsedActiveCoils = Number(activeCoils)
+    const parsedForce = Number(force)
+
+    if (
+        !Number.isFinite(parsedWireDiameter) ||
+        !Number.isFinite(parsedCoilDiameter) ||
+        !Number.isFinite(parsedActiveCoils) ||
+        !Number.isFinite(parsedForce)
+    ) {
+        alert("Please enter valid numbers")
+        return
+    }
+
+    if (
+        parsedWireDiameter <= 0 ||
+        parsedCoilDiameter <= 0 ||
+        parsedActiveCoils <= 0 ||
+        parsedForce < 0
+    ) {
+        alert("Dimensions and active coils must be positive; force cannot be negative")
+        return
+    }
+
+    if (parsedCoilDiameter <= parsedWireDiameter) {
         alert("Coil diameter must be larger than wire diameter")
         return
     }
 
     try {
 
-      let convertedWireDiameter = Number(wireDiameter)
+      let convertedWireDiameter = parsedWireDiameter
 
-      let convertedCoilDiameter = Number(coilDiameter)
+      let convertedCoilDiameter = parsedCoilDiameter
 
-      let convertedForce = Number(force)
+      let convertedForce = parsedForce
 
       if (unitSystem === "Imperial") {
 
@@ -83,8 +89,7 @@ function App() {
 
         wire_diameter: convertedWireDiameter,
         coil_diameter: convertedCoilDiameter,
-        active_coils: Number(activeCoils),
-        shear_modulus: 79000,
+        active_coils: parsedActiveCoils,
         force: convertedForce,
         material: material,
       })
