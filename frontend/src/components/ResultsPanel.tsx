@@ -3,31 +3,30 @@ import SpringGraph from './SpringGraph'
 import {
     mmToInches,
     nToLbf,
+    nmmToLbfIn,
+    nPerMmToLbfPerIn,
+    mpaToKsi,
 } from '../utils/unitConversions'
 
 import type {
-    CompressionSpringResult,
     GraphPoint,
+    SpringResult,
 } from '../api/SpringApi'
 
 
 interface ResultsPanelProps {
 
-    results: CompressionSpringResult | null
+    results: SpringResult | null
 
     unitSystem: string
 }
 
 
-function nPerMmToLbfPerIn(value: number): number {
-
-    return nToLbf(value) * 25.4
-}
-
-
-function mpaToKsi(value: number): number {
-
-    return value * 0.145038
+const springTypeLabels = {
+    compression: "Compression Spring",
+    extension: "Extension Spring",
+    round_torsion: "Round-Wire Torsion Spring",
+    square_torsion: "Square-Section Torsion Spring",
 }
 
 
@@ -46,8 +45,14 @@ function ResultsPanel({
     const forceUnit =
         unitSystem === "Metric" ? "N" : "lbf"
 
+    const torqueUnit =
+        unitSystem === "Metric" ? "N mm" : "lbf in"
+
     const springRateUnit =
         unitSystem === "Metric" ? "N/mm" : "lbf/in"
+
+    const torqueRateUnit =
+        unitSystem === "Metric" ? "N mm/deg" : "lbf in/deg"
 
     const stressUnit =
         unitSystem === "Metric" ? "MPa" : "ksi"
@@ -62,28 +67,34 @@ function ResultsPanel({
             ? results.inside_diameter
             : mmToInches(results.inside_diameter)
 
-    const solidHeight =
-        unitSystem === "Metric"
-            ? results.solid_height
-            : mmToInches(results.solid_height)
-
-    const springRate =
-        unitSystem === "Metric"
-            ? results.spring_rate
-            : nPerMmToLbfPerIn(results.spring_rate)
-
     const stress =
-        unitSystem === "Metric"
+        "stress" in results
             ? results.stress
-            : mpaToKsi(results.stress)
+            : results.bending_stress
+
+    const displayedStress =
+        unitSystem === "Metric"
+            ? stress
+            : mpaToKsi(stress)
+
+    const isTorsion =
+        results.spring_type === "round_torsion" ||
+        results.spring_type === "square_torsion"
 
     const graphData: GraphPoint[] =
-        unitSystem === "Metric"
-            ? results.graph_data
-            : results.graph_data.map((point) => ({
-                deflection: mmToInches(point.deflection),
-                force: nToLbf(point.force),
-            }))
+        results.graph_data.map((point) => {
+            if (isTorsion) {
+                return {
+                    deflection: point.deflection,
+                    force: unitSystem === "Metric" ? point.force : nmmToLbfIn(point.force),
+                }
+            }
+
+            return {
+                deflection: unitSystem === "Metric" ? point.deflection : mmToInches(point.deflection),
+                force: unitSystem === "Metric" ? point.force : nToLbf(point.force),
+            }
+        })
 
     return (
 
@@ -93,15 +104,47 @@ function ResultsPanel({
                 Results
             </h2>
 
+            <p className="mb-4 font-semibold">
+                {springTypeLabels[results.spring_type]}
+            </p>
+
             <div className="space-y-2">
 
-                <p>
-                    Spring Rate:
-                    {" "}
-                    {springRate.toFixed(2)}
-                    {" "}
-                    {springRateUnit}
-                </p>
+                {"spring_rate" in results && (
+                    <p>
+                        Spring Rate:
+                        {" "}
+                        {(unitSystem === "Metric"
+                            ? results.spring_rate
+                            : nPerMmToLbfPerIn(results.spring_rate)).toFixed(2)}
+                        {" "}
+                        {springRateUnit}
+                    </p>
+                )}
+
+                {"torque_rate" in results && (
+                    <p>
+                        Torque Rate:
+                        {" "}
+                        {(unitSystem === "Metric"
+                            ? results.torque_rate
+                            : nmmToLbfIn(results.torque_rate)).toFixed(2)}
+                        {" "}
+                        {torqueRateUnit}
+                    </p>
+                )}
+
+                {"torque" in results && (
+                    <p>
+                        Torque:
+                        {" "}
+                        {(unitSystem === "Metric"
+                            ? results.torque
+                            : nmmToLbfIn(results.torque)).toFixed(2)}
+                        {" "}
+                        {torqueUnit}
+                    </p>
+                )}
 
                 <p>
                     Outside Diameter:
@@ -125,30 +168,66 @@ function ResultsPanel({
                     {results.spring_index.toFixed(2)}
                 </p>
 
-                <p>
-                    Solid Height:
-                    {" "}
-                    {solidHeight.toFixed(2)}
-                    {" "}
-                    {lengthUnit}
-                </p>
+                {"solid_height" in results && (
+                    <p>
+                        Solid Height:
+                        {" "}
+                        {(unitSystem === "Metric"
+                            ? results.solid_height
+                            : mmToInches(results.solid_height)).toFixed(2)}
+                        {" "}
+                        {lengthUnit}
+                    </p>
+                )}
+
+                {"initial_tension" in results && (
+                    <p>
+                        Initial Tension:
+                        {" "}
+                        {(unitSystem === "Metric"
+                            ? results.initial_tension
+                            : nToLbf(results.initial_tension)).toFixed(2)}
+                        {" "}
+                        {forceUnit}
+                    </p>
+                )}
+
+                {"extension" in results && (
+                    <p>
+                        Extension At Input Force:
+                        {" "}
+                        {(unitSystem === "Metric"
+                            ? results.extension
+                            : mmToInches(results.extension)).toFixed(2)}
+                        {" "}
+                        {lengthUnit}
+                    </p>
+                )}
 
                 <p>
-                    Stress:
+                    {isTorsion ? "Bending Stress:" : "Stress:"}
                     {" "}
-                    {stress.toFixed(2)}
+                    {displayedStress.toFixed(2)}
                     {" "}
                     {stressUnit}
                 </p>
 
             </div>
 
+            {results.spring_type === "square_torsion" && (
+                <p className="mt-4 text-sm text-gray-600">
+                    Square-section torsion uses an approximate section stiffness factor; validate final designs against a spring design standard or supplier data.
+                </p>
+            )}
+
             <div className="mt-6">
 
                 <SpringGraph
                     graphData={graphData}
-                    xUnit={lengthUnit}
-                    yUnit={forceUnit}
+                    xUnit={isTorsion ? "deg" : lengthUnit}
+                    yUnit={isTorsion ? torqueUnit : forceUnit}
+                    xLabel={isTorsion ? "Angle" : "Deflection"}
+                    yLabel={isTorsion ? "Torque" : "Force"}
                 />
 
             </div>

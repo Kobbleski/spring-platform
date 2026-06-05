@@ -1,58 +1,51 @@
 import math
+
 from data.materials import SPRING_MATERIALS
 
 
-def calculate_compression_spring(inputs):
+def calculate_extension_spring(inputs):
 
     d = inputs.wire_diameter
     D = inputs.coil_diameter
     n = inputs.active_coils
+    force = inputs.force
+    initial_tension = inputs.initial_tension
 
     material_data = SPRING_MATERIALS[inputs.material]
     G = material_data["shear_modulus"]
 
-    # Spring rate
     spring_rate = (G * d**4) / (8 * D**3 * n)
-
-    # Diameters
     outside_diameter = D + d
     inside_diameter = D - d
-
-    # Spring index
     spring_index = D / d
 
-    # Solid height
-    solid_height = n * d
+    working_extension = max((force - initial_tension) / spring_rate, 0)
+    effective_force = initial_tension + spring_rate * working_extension
 
-    # Example force
-    force = inputs.force
-
-    # Wahl correction factor
     wahl_factor = ((4 * spring_index - 1) / (4 * spring_index - 4)) + (0.615 / spring_index)
-
-    # Stress
     stress = (
-        (8 * force * D) /
+        (8 * effective_force * D) /
         (math.pi * d**3)
     ) * wahl_factor
 
     graph_data = []
 
-    for deflection in range(0, 11):
-        graph_force = spring_rate * deflection
+    for extension in range(0, 11):
+        graph_force = initial_tension + spring_rate * extension
 
         graph_data.append({
-            "deflection": deflection,
+            "deflection": extension,
             "force": graph_force
         })
 
     return {
-        "spring_type": "compression",
+        "spring_type": "extension",
         "spring_rate": spring_rate,
         "outside_diameter": outside_diameter,
         "inside_diameter": inside_diameter,
         "spring_index": spring_index,
-        "solid_height": solid_height,
+        "initial_tension": initial_tension,
+        "extension": working_extension,
         "stress": stress,
         "graph_data": graph_data
     }

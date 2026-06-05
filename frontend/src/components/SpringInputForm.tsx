@@ -1,31 +1,57 @@
+import type {
+    SpringType,
+} from '../api/SpringApi'
+
+
 interface SpringInputFormProps {
 
+    springType: SpringType
     wireDiameter: string
     coilDiameter: string
     activeCoils: string
     force: string
+    initialTension: string
+    angleDegrees: string
     material: string
     unitSystem: string
 
+    setSpringType: (value: SpringType) => void
     setWireDiameter: (value: string) => void
     setCoilDiameter: (value: string) => void
     setActiveCoils: (value: string) => void
     setForce: (value: string) => void
+    setInitialTension: (value: string) => void
+    setAngleDegrees: (value: string) => void
     setMaterial: (value: string) => void
     setUnitSystem: (value: string) => void
 
     onCalculate: () => void
 }
 
+
+const springTypeLabels: Record<SpringType, string> = {
+    compression: "Compression Spring",
+    extension: "Extension Spring",
+    round_torsion: "Round-Wire Torsion Spring",
+    square_torsion: "Square-Section Torsion Spring",
+}
+
+
 function SpringInputForm({
+    springType,
     wireDiameter,
     coilDiameter,
+    setSpringType,
     setWireDiameter,
     setCoilDiameter,
     activeCoils,
     force,
+    initialTension,
+    angleDegrees,
     setActiveCoils,
     setForce,
+    setInitialTension,
+    setAngleDegrees,
     material,
     setMaterial,
     unitSystem,
@@ -39,12 +65,41 @@ function SpringInputForm({
     const forceUnit =
         unitSystem === "Metric" ? "N" : "lbf"
 
+    const isTorsion =
+        springType === "round_torsion" || springType === "square_torsion"
+
+    const wireLabel =
+        springType === "square_torsion" ? "Section Side" : "Wire Diameter"
+
     return (
 
         <div>
 
             <div className="mb-4">
-                <p>Wire Diameter ({lengthUnit})</p>
+
+                <p>Spring Type</p>
+
+                <select
+                    className="border rounded p-2 w-full"
+                    value={springType}
+                    onChange={(e) => setSpringType(e.target.value as SpringType)}
+                >
+
+                    {Object.entries(springTypeLabels).map(([value, label]) => (
+                        <option
+                            key={value}
+                            value={value}
+                        >
+                            {label}
+                        </option>
+                    ))}
+
+                </select>
+
+            </div>
+
+            <div className="mb-4">
+                <p>{wireLabel} ({lengthUnit})</p>
 
                 <input
                     className="border rounded p-2 w-full"
@@ -54,7 +109,7 @@ function SpringInputForm({
             </div>
 
             <div className="mb-4">
-                <p>Coil Diameter ({lengthUnit})</p>
+                <p>Mean Coil Diameter ({lengthUnit})</p>
 
                 <input
                     className="border rounded p-2 w-full"
@@ -73,15 +128,41 @@ function SpringInputForm({
                 />
             </div>
 
-            <div className="mb-4">
-                <p>Force ({forceUnit})</p>
+            {!isTorsion && (
+                <div className="mb-4">
+                    <p>Force ({forceUnit})</p>
 
-                <input
-                    className="border rounded p-2 w-full"
-                    value={force}
-                    onChange={(e) => setForce(e.target.value)}
-                />
-            </div>
+                    <input
+                        className="border rounded p-2 w-full"
+                        value={force}
+                        onChange={(e) => setForce(e.target.value)}
+                    />
+                </div>
+            )}
+
+            {springType === "extension" && (
+                <div className="mb-4">
+                    <p>Initial Tension ({forceUnit})</p>
+
+                    <input
+                        className="border rounded p-2 w-full"
+                        value={initialTension}
+                        onChange={(e) => setInitialTension(e.target.value)}
+                    />
+                </div>
+            )}
+
+            {isTorsion && (
+                <div className="mb-4">
+                    <p>Angle (degrees)</p>
+
+                    <input
+                        className="border rounded p-2 w-full"
+                        value={angleDegrees}
+                        onChange={(e) => setAngleDegrees(e.target.value)}
+                    />
+                </div>
+            )}
 
             <div className="mb-4">
 

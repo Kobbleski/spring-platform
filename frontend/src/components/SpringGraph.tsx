@@ -17,6 +17,8 @@ interface SpringGraphProps {
     graphData: GraphPoint[]
     xUnit: string
     yUnit: string
+    xLabel: string
+    yLabel: string
 }
 
 
@@ -24,6 +26,8 @@ function SpringGraph({
     graphData,
     xUnit,
     yUnit,
+    xLabel,
+    yLabel,
 }: SpringGraphProps) {
 
     return (
@@ -39,7 +43,7 @@ function SpringGraph({
                     <XAxis
                         dataKey="deflection"
                         label={{
-                            value: `Deflection (${xUnit})`,
+                            value: `${xLabel} (${xUnit})`,
                             position: "insideBottom",
                             offset: -5,
                         }}
@@ -47,7 +51,7 @@ function SpringGraph({
 
                     <YAxis
                         label={{
-                            value: `Force (${yUnit})`,
+                            value: `${yLabel} (${yUnit})`,
                             angle: -90,
                             position: "insideLeft",
                         }}
